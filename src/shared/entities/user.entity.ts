@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('users')
 @Unique(['email'])
@@ -18,7 +19,7 @@ export class UserEntity {
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
+  @Exclude()
   @Column()
   @IsNotEmpty()
   @Matches(/^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/, {

@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
+import { PropertyDTO } from './dto/property.dto';
 
 @Controller('property')
 export class PropertyController {
@@ -13,8 +22,11 @@ export class PropertyController {
   }
 
   @Get()
-  findAll() {
-    return this.propertyService.findAll();
+  async findAll(): Promise<PropertyDTO[]> {
+    const [properties, count] = await this.propertyService.findAll();
+    return properties.map((property) =>
+      Object.assign(new PropertyDTO(), property),
+    );
   }
 
   @Get(':id')
@@ -23,7 +35,10 @@ export class PropertyController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePropertyDto: UpdatePropertyDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updatePropertyDto: UpdatePropertyDto,
+  ) {
     return this.propertyService.update(+id, updatePropertyDto);
   }
 
