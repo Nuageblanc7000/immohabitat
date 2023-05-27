@@ -1,3 +1,5 @@
+-- drop database if EXISTS immohabitat;
+-- create database if not EXISTS immohabitat;
 USE immohabitat;
 
 SET FOREIGN_KEY_CHECKS = 0; -- Désactive la vérification des clés étrangères pour permettre le TRUNCATE

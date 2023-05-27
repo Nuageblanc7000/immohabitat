@@ -1,15 +1,16 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
-  IsDate,
   IsDefined,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  Validate,
   ValidateNested,
 } from 'class-validator';
 import { LocationDTO } from 'src/shared/dto/locationCreate.dto';
+import { ValidDateConstraint } from 'src/shared/validatorCustom/validator.date';
 export class CreatePropertyDto {
   @IsDefined()
   @IsString()
@@ -24,9 +25,10 @@ export class CreatePropertyDto {
   @IsNotEmpty()
   @IsNumber()
   price: number;
-
-  @IsDate()
   @IsNotEmpty()
+  @Validate(ValidDateConstraint, {
+    message: 'Veuillez indiquer une data valide',
+  })
   yearBuilt: Date;
 
   @IsNotEmpty()
@@ -51,7 +53,7 @@ export class CreatePropertyDto {
   @IsBoolean()
   diningRoom?: boolean;
   @IsOptional()
-  @IsBoolean()
+  @IsString()
   kitchenType: string;
   // Exterior
   @IsOptional()

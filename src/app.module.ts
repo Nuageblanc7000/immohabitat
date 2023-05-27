@@ -1,33 +1,31 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { PropertyModule } from './property/property.module';
 import { UsersModule } from './users/users.module';
 import { TypesModule } from './types/types.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ClassSerializerInterceptor } from '@nestjs/common';
+import { ValidatorsModule } from './validators/validators.module';
+import { ConfigModule } from '@nestjs/config';
+import { DatabaseModule } from './database/database.module';
+
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: '',
-      database: 'immohabitat',
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
+    ConfigModule.forRoot(),
     PropertyModule,
     UsersModule,
     TypesModule,
     AuthModule,
+    ValidatorsModule,
+    DatabaseModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
+
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
   ],
 })

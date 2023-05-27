@@ -11,9 +11,10 @@ import { LocationEntity } from './location.entity';
 import { UserEntity } from './user.entity';
 import { TypeEntity } from './type.entity';
 import slugify from 'slugify';
+import { LifeTimeEntity } from './lifetime.entity';
 
 @Entity('properties')
-export class PropertyEntity {
+export class PropertyEntity extends LifeTimeEntity {
   @BeforeInsert()
   slugConverter(): void {
     this.slug = slugify(this.location.street + this.id, {
@@ -88,7 +89,9 @@ export class PropertyEntity {
 
   //-------relations
 
-  @OneToOne(() => LocationEntity, (location) => location.property)
+  @OneToOne(() => LocationEntity, (location) => location.property, {
+    cascade: ['soft-remove', 'insert', 'update'],
+  })
   @JoinColumn()
   location: LocationEntity;
 

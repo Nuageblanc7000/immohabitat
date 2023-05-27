@@ -4,7 +4,7 @@ export class LocationDTO {
   @IsString()
   street: string;
 
-  @IsNumber()
+  @IsString()
   post_code: string;
 
   @IsString()

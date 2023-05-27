@@ -6,27 +6,24 @@ import {
   Patch,
   Param,
   Delete,
+  ValidationPipe,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
-import { PropertyDTO } from './dto/property.dto';
 
 @Controller('property')
 export class PropertyController {
   constructor(private readonly propertyService: PropertyService) {}
 
   @Post()
-  create(@Body() createPropertyDto: CreatePropertyDto) {
+  create(@Body(ValidationPipe) createPropertyDto: CreatePropertyDto) {
     return this.propertyService.create(createPropertyDto);
   }
 
   @Get()
-  async findAll(): Promise<PropertyDTO[]> {
-    const [properties, count] = await this.propertyService.findAll();
-    return properties.map((property) =>
-      Object.assign(new PropertyDTO(), property),
-    );
+  async findAll() {
+    return this.propertyService.findAll();
   }
 
   @Get(':id')

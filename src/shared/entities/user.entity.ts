@@ -8,10 +8,11 @@ import {
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { Exclude } from 'class-transformer';
+import { LifeTimeEntity } from './lifetime.entity';
 
 @Entity('users')
 @Unique(['email'])
-export class UserEntity {
+export class UserEntity extends LifeTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -28,6 +29,8 @@ export class UserEntity {
   })
   password: string;
 
-  @OneToMany(() => PropertyEntity, (property) => property.user)
+  @OneToMany(() => PropertyEntity, (property) => property.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
   properties: PropertyEntity[];
 }
