@@ -11,6 +11,7 @@ import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ValidatorsModule } from './validators/validators.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     ValidatorsModule,
     DatabaseModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [
