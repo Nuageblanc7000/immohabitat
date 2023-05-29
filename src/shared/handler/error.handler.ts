@@ -12,14 +12,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     console.log(exception instanceof Error);
-    if (
-      exception instanceof HttpException ||
-      exception instanceof BadRequestException
-    ) {
+    if (exception instanceof HttpException) {
       // Gérer les exceptions spécifiques (ex: NotFoundException, BadRequestException)
       const status = exception.getStatus();
       const { message } = <any>exception.getResponse();
-      console.log(status);
+      console.log(status, '------------------->');
 
       const error = exception.getResponse();
       response.status(status).json({

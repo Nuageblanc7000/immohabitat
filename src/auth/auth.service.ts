@@ -9,7 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/shared/entities/user.entity';
 import { Repository } from 'typeorm';
 import { MailerService } from 'src/mailer/mailer.service';
-import { JwtService, JwtSignOptions } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(

@@ -10,11 +10,13 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { SuccessResponse } from 'src/shared/responses/success.response';
 import { SignInDto } from './dto/signin.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('signup')
   async signup(
     @Body(ValidationPipe) newUser: CreateUserDto,

@@ -7,10 +7,11 @@ import { UsersService } from 'src/users/users.service';
 import { MailerModule } from 'src/mailer/mailer.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { strategyService } from './strategy.service';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, UsersService],
+  providers: [AuthService, UsersService, strategyService, ConfigService],
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     MailerModule,
@@ -20,7 +21,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       useFactory: (config: ConfigService) => ({
         global: true,
         secret: config.get('SECRET_TOKEN_KEY'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: '30s' },
       }),
     }),
   ],
