@@ -5,10 +5,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/shared/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { MailerModule } from 'src/mailer/mailer.module';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, UsersService],
-  imports: [TypeOrmModule.forFeature([UserEntity]), MailerModule],
+  imports: [
+    TypeOrmModule.forFeature([UserEntity]),
+    MailerModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        global: true,
+        secret: config.get('SECRET_TOKEN_KEY'),
+        signOptions: { expiresIn: '1h' },
+      }),
+    }),
+  ],
 })
 export class AuthModule {}
