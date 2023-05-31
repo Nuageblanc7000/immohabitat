@@ -10,6 +10,7 @@ import {
   Request,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { PropertyService } from './property.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -35,10 +36,14 @@ export class PropertyController {
     return this.propertyService.findAll();
   }
 
-  @Get(':slug')
-  findOne(@Param('slug') slug: string) {
-    return this.propertyService.findOne(slug);
+  @Get(':id(\\d+)')
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.propertyService.findOne(id);
   }
+  // @Get(':slug')
+  // findOneSlug(@Param('slug') slug: string) {
+  //   return this.propertyService.findOneSlug(slug);
+  // }
 
   @UseGuards(IsOwnerGuard)
   @Patch(':id')
@@ -49,6 +54,7 @@ export class PropertyController {
     return this.propertyService.update(+id, updatePropertyDto);
   }
   @UseGuards(IsOwnerGuard)
+  @HttpCode(201)
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: string) {
     return this.propertyService.remove(+id);

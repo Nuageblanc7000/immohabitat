@@ -47,7 +47,15 @@ export class PropertyService {
     });
   }
 
-  async findOne(slug: string) {
+  async findOne(id: number) {
+    const property = await this.propertyRepository.findOne({
+      where: { id: id },
+      relations: ['user', 'location', 'type'],
+    });
+    if (!property) throw new NotFoundException();
+    return property;
+  }
+  async findOneSlug(slug: string) {
     const property = await this.propertyRepository.findOne({
       where: { slug: slug },
       relations: ['user', 'location', 'type'],
