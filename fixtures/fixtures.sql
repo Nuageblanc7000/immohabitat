@@ -1,6 +1,6 @@
--- drop database if EXISTS immohabitat;
--- create database if not EXISTS immohabitat;
 USE immohabitat;
+drop database if EXISTS immohabitat;
+create database if not EXISTS immohabitat;
 
 SET FOREIGN_KEY_CHECKS = 0; -- Désactive la vérification des clés étrangères pour permettre le TRUNCATE
 
@@ -15,9 +15,9 @@ SET FOREIGN_KEY_CHECKS = 1; -- Réactive la vérification des clés étrangères
 
 INSERT INTO users (email, password)
 VALUES
-  ('user1@example.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO'), -- Mot de passe : password1
-  ('user2@example.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO'), -- Mot de passe : password2
-  ('user3@example.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO'); -- Mot de passe : password3
+  ('wetterene@msn.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO','wetterene','remy'), -- Mot de passe : password1
+  ('legoarant@gmail.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO','legoarant','Chloé'), -- Mot de passe : password2
+  ('urbain@hotmail.com', '$2b$10$5DRrBoe.YE4Z4Zbav4cRuOxjiPe0hBBkiYYgMvva8.S8heX1u89eO','urbain','ludovic'); -- Mot de passe : password3
 -- Ajoutez d'autres valeurs pour les autres utilisateurs ici
 
 

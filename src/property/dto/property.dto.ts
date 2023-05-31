@@ -1,4 +1,5 @@
-import { LocationDTO } from 'src/shared/dto/locationCreate.dto';
+import { LocationDto } from 'src/shared/dto/location.dto';
+import { TypeDTO } from 'src/types/dto/type.dto';
 import { UserDTO } from 'src/users/dto/user.dto';
 
 export class PropertyDTO {
@@ -21,6 +22,7 @@ export class PropertyDTO {
   parking: boolean;
   courtyard: boolean;
   commonOutdoorSpaces: boolean;
-  location: LocationDTO;
+  location: LocationDto;
+  type: TypeDTO;
   user: UserDTO;
 }

@@ -1,14 +1,16 @@
-import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
 import {
   Entity,
   Unique,
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { Exclude } from 'class-transformer';
 import { LifeTimeEntity } from './lifetime.entity';
+import { FavoriteEntity } from './favorite.entity';
 
 @Entity('users')
 @Unique(['email'])
@@ -20,6 +22,15 @@ export class UserEntity extends LifeTimeEntity {
   @IsEmail()
   @IsNotEmpty()
   email: string;
+
+  @Column()
+  @IsString()
+  @IsNotEmpty()
+  firstname: string;
+  @Column()
+  @IsString()
+  @IsNotEmpty()
+  lastname: string;
   @Exclude()
   @Column()
   @IsNotEmpty()
@@ -33,4 +44,9 @@ export class UserEntity extends LifeTimeEntity {
     cascade: ['insert', 'update', 'soft-remove'],
   })
   properties: PropertyEntity[];
+
+  @OneToMany(() => FavoriteEntity, (favorite) => favorite.user, {
+    cascade: ['insert', 'update', 'soft-remove'],
+  })
+  favorites: FavoriteEntity[];
 }

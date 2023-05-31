@@ -9,7 +9,8 @@ import {
   Validate,
   ValidateNested,
 } from 'class-validator';
-import { LocationDTO } from 'src/shared/dto/locationCreate.dto';
+import { LocationDto } from 'src/shared/dto/location.dto';
+
 import { ValidDateConstraint } from 'src/shared/validatorCustom/validator.date';
 export class CreatePropertyDto {
   @IsDefined()
@@ -80,12 +81,10 @@ export class CreatePropertyDto {
   @IsOptional()
   @IsBoolean()
   commonOutdoorSpaces?: boolean;
-
-  @IsNotEmpty()
   @IsNumber()
   typeId: number;
 
   @ValidateNested()
-  @Type(() => LocationDTO)
-  location: LocationDTO;
+  @Type(() => LocationDto)
+  location: LocationDto;
 }

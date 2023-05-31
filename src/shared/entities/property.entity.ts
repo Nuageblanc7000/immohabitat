@@ -1,27 +1,33 @@
 import {
+  AfterInsert,
   BeforeInsert,
   Column,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  Unique,
 } from 'typeorm';
 import { LocationEntity } from './location.entity';
 import { UserEntity } from './user.entity';
 import { TypeEntity } from './type.entity';
 import slugify from 'slugify';
 import { LifeTimeEntity } from './lifetime.entity';
+import { FavoriteEntity } from './favorite.entity';
 
 @Entity('properties')
+// @Unique(['slug'])
 export class PropertyEntity extends LifeTimeEntity {
-  @BeforeInsert()
+  @AfterInsert()
   slugConverter(): void {
-    this.slug = slugify(this.location.street + this.id, {
+    this.slug = slugify(this.location.street + '-' + this.id, {
       lower: true,
       replacement: '-',
       strict: true,
     });
+    this.save();
   }
   @PrimaryGeneratedColumn()
   id: number;
@@ -98,6 +104,9 @@ export class PropertyEntity extends LifeTimeEntity {
   @ManyToOne(() => UserEntity, (user) => user.properties)
   user: UserEntity;
 
-  @ManyToOne(() => TypeEntity, (category) => category.properties)
+  @ManyToOne(() => TypeEntity, (type) => type.properties)
   type: TypeEntity;
+
+  @OneToMany(() => FavoriteEntity, (favorite) => favorite.property)
+  favorites: FavoriteEntity[];
 }

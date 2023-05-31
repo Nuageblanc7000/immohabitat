@@ -21,7 +21,7 @@ import { strategyService } from './strategy.service';
       useFactory: (config: ConfigService) => ({
         global: true,
         secret: config.get('SECRET_TOKEN_KEY'),
-        signOptions: { expiresIn: '30s' },
+        signOptions: { expiresIn: '1h' },
       }),
     }),
   ],

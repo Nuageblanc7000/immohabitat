@@ -1,6 +1,6 @@
 import { IsString, IsNumber } from 'class-validator';
 
-export class LocationDTO {
+export class LocationDto {
   @IsString()
   street: string;
 

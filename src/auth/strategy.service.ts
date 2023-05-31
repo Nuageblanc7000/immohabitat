@@ -7,7 +7,7 @@ import { UserEntity } from 'src/shared/entities/user.entity';
 import { Repository } from 'typeorm';
 
 type Payload = {
-  id: number;
+  sub: number;
 };
 // creation du passort
 @Injectable()
@@ -24,7 +24,7 @@ export class strategyService extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: Payload) {
-    const user = await this.userRepo.findOne({ where: { id: payload.id } });
+    const user = await this.userRepo.findOne({ where: { id: payload.sub } });
     if (!user) new UnauthorizedException('Accès refusé à la ressource');
     return user;
   }

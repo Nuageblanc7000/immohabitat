@@ -12,6 +12,7 @@ import { ValidatorsModule } from './validators/validators.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { MailerModule } from './mailer/mailer.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MailerModule } from './mailer/mailer.module';
     ValidatorsModule,
     DatabaseModule,
     MailerModule,
+    FavoriteModule,
   ],
   controllers: [AppController],
   providers: [
