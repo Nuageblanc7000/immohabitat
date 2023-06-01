@@ -1,6 +1,6 @@
 import { IsNumber } from 'class-validator';
 
-export class CreateFavoriteDto {
+export class propertyIdDto {
   @IsNumber()
   propertyId: number;
 }
