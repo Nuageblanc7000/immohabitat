@@ -11,12 +11,15 @@ export class ExistMiddleware implements NestMiddleware {
     private readonly propertyRepo: Repository<PropertyEntity>,
   ) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log(req.params);
-    const id = req.params.id ? req.params.id : null;
+    const id = req.params.id ? +req.params.id : null;
     const slug = req.params.slug ? req.params.slug : null;
+    if (id !== null && isNaN(id))
+      throw new NotFoundException('Aucune entité trouvée avec cette id');
+
     const entity = await this.propertyRepo.findOne({
       where: [{ slug: slug }, { id: +id }],
     });
+
     if (!entity)
       throw new NotFoundException('Aucune entité trouvée avec cette id');
     return next();

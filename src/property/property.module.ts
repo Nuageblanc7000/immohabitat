@@ -10,7 +10,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PropertyEntity } from 'src/shared/entities/property.entity';
 import { TypeEntity } from 'src/shared/entities/type.entity';
 import { LocationEntity } from 'src/shared/entities/location.entity';
-import { ExistMiddleware } from 'src/shared/middleware/exist/exist.middleware';
+import { ExistMiddleware } from 'src/shared/middleware/exist/existProperty.middleware';
 
 @Module({
   controllers: [PropertyController],

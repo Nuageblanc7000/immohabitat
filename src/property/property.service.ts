@@ -13,7 +13,6 @@ import { plainToClass } from 'class-transformer';
 import { UserEntity } from 'src/shared/entities/user.entity';
 import { TypeEntity } from 'src/shared/entities/type.entity';
 import { LocationEntity } from 'src/shared/entities/location.entity';
-import { PropertyDTO } from './dto/property.dto';
 
 @Injectable()
 export class PropertyService {
@@ -36,7 +35,6 @@ export class PropertyService {
       );
     }
     const property = plainToClass(PropertyEntity, createPropertyDto);
-    console.log(property);
     property.user = user;
     property.type = type;
     return await this.propertyRepository.save(property);
@@ -88,7 +86,6 @@ export class PropertyService {
     location.post_code = updatePropertyDto.location.post_code;
     location.city = updatePropertyDto.location.city;
     updatedProperty.location = await this.locationRepository.save(location);
-
     return updatedProperty;
   }
 

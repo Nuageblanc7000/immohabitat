@@ -3,7 +3,6 @@ import {
   Catch,
   ArgumentsHost,
   HttpException,
-  BadRequestException,
 } from '@nestjs/common';
 
 @Catch()
@@ -16,8 +15,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       // Gérer les exceptions spécifiques (ex: NotFoundException, BadRequestException)
       const status = exception.getStatus();
       const { message } = <any>exception.getResponse();
-      console.log(status, '------------------->');
-
       const error = exception.getResponse();
       response.status(status).json({
         statusCode: status,
