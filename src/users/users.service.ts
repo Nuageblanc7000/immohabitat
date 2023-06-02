@@ -11,12 +11,14 @@ export class UsersService {
     @InjectRepository(UserEntity) readonly userRepo: Repository<UserEntity>,
   ) {}
 
-  findAll() {
-    return this.userRepo.findAndCount();
+  async findAll() {
+    const [users] = await this.userRepo.findAndCount();
+    return { users };
   }
 
-  findOne(id: number) {
-    return this.userRepo.findOneOrFail({ where: { id: id } });
+  async findOne(id: number) {
+    const user = await this.userRepo.findOneOrFail({ where: { id: id } });
+    return { user };
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
@@ -29,7 +31,6 @@ export class UsersService {
   }
 
   async userExists(email: string): Promise<boolean> {
-    console.log(email);
     const user = await this.userRepo.findOne({ where: { email: email } });
     return !!user; // Renvoie true si l'utilisateur existe, false sinon
   }

@@ -1,6 +1,5 @@
 import {
   AfterInsert,
-  BeforeInsert,
   Column,
   Entity,
   JoinColumn,
@@ -16,9 +15,8 @@ import { TypeEntity } from './type.entity';
 import slugify from 'slugify';
 import { LifeTimeEntity } from './lifetime.entity';
 import { FavoriteEntity } from './favorite.entity';
-
 @Entity('properties')
-// @Unique(['slug'])
+@Unique(['slug'])
 export class PropertyEntity extends LifeTimeEntity {
   @AfterInsert()
   slugConverter(): void {

@@ -39,10 +39,15 @@ export class PropertyService {
     property.type = type;
     return await this.propertyRepository.save(property);
   }
-  findAll() {
-    return this.propertyRepository.findAndCount({
+  async findAll() {
+    const [properties, count] = await this.propertyRepository.findAndCount({
       relations: ['location'],
     });
+
+    return {
+      properties: properties,
+      count: count,
+    };
   }
 
   async findOne(id: number) {
@@ -51,7 +56,7 @@ export class PropertyService {
       relations: ['user', 'location', 'type'],
     });
     if (!property) throw new NotFoundException();
-    return property;
+    return { property };
   }
   async findOneSlug(slug: string) {
     const property = await this.propertyRepository.findOne({
@@ -59,7 +64,7 @@ export class PropertyService {
       relations: ['user', 'location', 'type'],
     });
     if (!property) throw new NotFoundException();
-    return property;
+    return { property };
   }
 
   async update(id: number, updatePropertyDto: UpdatePropertyDto) {
@@ -86,13 +91,13 @@ export class PropertyService {
     location.post_code = updatePropertyDto.location.post_code;
     location.city = updatePropertyDto.location.city;
     updatedProperty.location = await this.locationRepository.save(location);
-    return updatedProperty;
+    return { property: updatedProperty };
   }
 
   async remove(id: number) {
     const property = await this.propertyRepository.findOne({
       where: { id: id },
     });
-    return this.propertyRepository.softRemove(property);
+    return { property: await this.propertyRepository.softRemove(property) };
   }
 }

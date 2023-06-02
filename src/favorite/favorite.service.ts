@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UpdateFavoriteDto } from './dto/update-favorite.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FavoriteEntity } from 'src/shared/entities/favorite.entity';
 import { Repository } from 'typeorm';
 import { UserEntity } from 'src/shared/entities/user.entity';
-import { UserDTO } from 'src/users/dto/user.dto';
 import { propertyIdDto } from 'src/shared/dto/propertyId.dto';
 import { PropertyEntity } from 'src/shared/entities/property.entity';
 
@@ -23,19 +21,28 @@ export class FavoriteService {
     const property = await this.propertyRepo.findOne({
       where: { id: propertyId.propertyId },
     });
-    console.log(property);
     if (!property) return false;
     const existingFavorite = await this.favoriteRepo.findOne({
+      withDeleted: true,
       where: {
         user: { id: users['id'] },
         property: { id: property['id'] },
       },
     });
-
-    if (existingFavorite) {
-      await this.favoriteRepo.remove(existingFavorite);
+    console.log(existingFavorite);
+    if (existingFavorite !== null && !existingFavorite?.deletedAt) {
+      await this.favoriteRepo.softRemove(existingFavorite);
       return false; // Le favori a été supprimé
+    } else if (
+      existingFavorite?.deletedAt !== null &&
+      existingFavorite?.deletedAt !== undefined
+    ) {
+      console.log('dans le else if', existingFavorite?.deletedAt);
+      existingFavorite.deletedAt = null;
+      existingFavorite.save();
+      return true;
     } else {
+      console.log('dans le else');
       const newFavorite = new FavoriteEntity();
       newFavorite.user = users;
       newFavorite.property = property;
@@ -49,16 +56,4 @@ export class FavoriteService {
       where: { user: { id: user['id'] } },
     });
   }
-
-  // findOne(id: number) {
-  //   return `This action returns a #${id} favorite`;
-  // }
-
-  // update(id: number, updateFavoriteDto: UpdateFavoriteDto) {
-  //   return `This action updates a #${id} favorite`;
-  // }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} favorite`;
-  // }
 }

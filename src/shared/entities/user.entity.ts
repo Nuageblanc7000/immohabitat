@@ -6,6 +6,7 @@ import {
   Column,
   OneToMany,
   ManyToOne,
+  BeforeInsert,
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { Exclude } from 'class-transformer';
@@ -40,6 +41,13 @@ export class UserEntity extends LifeTimeEntity {
   })
   password: string;
 
+  @Column({ type: 'simple-array' })
+  roles: string[];
+
+  @BeforeInsert()
+  autoRole() {
+    this.roles = ['user'];
+  }
   @OneToMany(() => PropertyEntity, (property) => property.user, {
     cascade: ['insert', 'update', 'soft-remove'],
   })
@@ -49,4 +57,14 @@ export class UserEntity extends LifeTimeEntity {
     cascade: ['insert', 'update', 'soft-remove'],
   })
   favorites: FavoriteEntity[];
+
+  addRoles(roles: string | string[]) {
+    this.roles = [
+      ...(Array.isArray(this.roles) ? this.roles : []),
+      ...(Array.isArray(roles) ? roles : [roles]),
+    ];
+  }
+  removeRoles(roles: string) {
+    this.roles = this.roles.filter((r) => r !== roles);
+  }
 }

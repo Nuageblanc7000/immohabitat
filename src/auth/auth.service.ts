@@ -10,6 +10,7 @@ import { UserEntity } from 'src/shared/entities/user.entity';
 import { Repository } from 'typeorm';
 import { MailerService } from 'src/mailer/mailer.service';
 import { JwtService } from '@nestjs/jwt';
+import { CreateUserDto } from './dto/create-user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -18,22 +19,23 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signup(email: string, password: string): Promise<UserEntity> {
-    const userExist = await this.userRepo.findOne({ where: { email: email } });
+  async signup(newUser: CreateUserDto): Promise<UserEntity> {
+    console.log(newUser);
+    const userExist = await this.userRepo.findOne({
+      where: { email: newUser.email },
+    });
     if (userExist) throw new BadRequestException('Cet email existe déjà');
 
     // encrypted password + created salt
     const salt = await bcrypt.genSalt(8);
-    const hashPassword = await bcrypt.hash(password, salt);
-    const userInstance = this.userRepo.create({
-      email: email,
-      password: hashPassword,
-    });
-    const newUser = await userInstance.save();
+    const hashPassword = await bcrypt.hash(newUser.password, salt);
+    newUser.password = hashPassword;
+    const userInstance = this.userRepo.create(newUser);
+    const user = await userInstance.save();
     //send mail custom
-    await this.mailerService.sendMail(newUser, {}, 'inscription à Immohabitat');
+    await this.mailerService.sendMail(user, {}, 'inscription à Immohabitat');
 
-    return newUser;
+    return user;
   }
 
   async signin(email: string, password: string) {
@@ -43,8 +45,8 @@ export class AuthService {
     const passMatch = await bcrypt.compare(password, user.password);
     if (!passMatch)
       throw new UnauthorizedException('Email ou password incorect');
-
     const payload = { sub: user.id };
+
     return {
       user,
       access_token: await this.jwtService.signAsync(payload),

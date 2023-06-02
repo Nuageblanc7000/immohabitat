@@ -23,23 +23,40 @@ export class TypesService {
     return type;
   }
 
-  findAll() {
-    return this.typeRepo.findAndCount();
+  async findAll() {
+    const [types] = await this.typeRepo.findAndCount();
+    return { types };
   }
 
-  findOne(id: number) {
-    return this.typeRepo.findOneBy({ id: id });
+  async findOne(id: number) {
+    const type = await this.typeRepo.findOneBy({ id: id });
+    return { type };
   }
 
   async update(id: number, updateTypeDto: UpdateTypeDto) {
     await this.existType(updateTypeDto.title);
-    return await this.typeRepo.update({ id: id }, updateTypeDto);
+    const type = await this.typeRepo.update({ id: id }, updateTypeDto);
+    return { type };
   }
 
   async remove(id: number) {
     const type = await this.typeRepo.findOneBy({ id: id });
     if (!type) throw new BadRequestException("Ce type n'existe pas");
-    return this.typeRepo.remove(type);
+
+    try {
+      // Supprimer le type
+      return await this.typeRepo.delete(id);
+    } catch (error) {
+      // Gérer l'erreur de contrainte de clé étrangère
+      if (error.code === 'ER_ROW_IS_REFERENCED_2') {
+        throw new BadRequestException(
+          'Impossible de supprimer ce type car il est lié à des entités.',
+        );
+      } else {
+        // Gérer d'autres erreurs
+        throw error;
+      }
+    }
   }
   async existType(title: string) {
     const typeExist = await this.typeRepo.findOneBy({ title: title });

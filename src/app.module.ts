@@ -13,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './database/database.module';
 import { MailerModule } from './mailer/mailer.module';
 import { FavoriteModule } from './favorite/favorite.module';
+import { SuccessInterceptor } from './shared/interceptor/SuccessInterceptor.interceptor';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { FavoriteModule } from './favorite/favorite.module';
     AppService,
 
     { provide: APP_INTERCEPTOR, useClass: ClassSerializerInterceptor },
+    { provide: APP_INTERCEPTOR, useClass: SuccessInterceptor },
   ],
 })
 export class AppModule {}
