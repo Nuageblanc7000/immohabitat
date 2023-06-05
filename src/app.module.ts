@@ -14,6 +14,8 @@ import { DatabaseModule } from './database/database.module';
 import { MailerModule } from './mailer/mailer.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { SuccessInterceptor } from './shared/interceptor/SuccessInterceptor.interceptor';
+import { IsLocationValidConstraint } from './shared/validatorCustom/validateNestedLocation.validator';
+import { ValidDateConstraint } from './shared/validatorCustom/validator.date';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { SuccessInterceptor } from './shared/interceptor/SuccessInterceptor.inte
     DatabaseModule,
     MailerModule,
     FavoriteModule,
+    IsLocationValidConstraint,
+    ValidDateConstraint,
   ],
   controllers: [AppController],
   providers: [

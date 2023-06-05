@@ -9,13 +9,17 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signup(@Body(ValidationPipe) newUser: CreateUserDto) {
+  async signup(
+    @Body(new ValidationPipe({ whitelist: true })) newUser: CreateUserDto,
+  ) {
     const data = await this.authService.signup(newUser);
     return data;
   }
 
   @Post('signin')
-  async signin(@Body() signinDto: SignInDto) {
+  async signin(
+    @Body(new ValidationPipe({ whitelist: true })) signinDto: SignInDto,
+  ) {
     const { email, password } = signinDto;
     const data = await this.authService.signin(email, password);
     return data;

@@ -29,7 +29,6 @@ export class FavoriteService {
         property: { id: property['id'] },
       },
     });
-    console.log(existingFavorite);
     if (existingFavorite !== null && !existingFavorite?.deletedAt) {
       await this.favoriteRepo.softRemove(existingFavorite);
       return false; // Le favori a été supprimé
@@ -37,12 +36,10 @@ export class FavoriteService {
       existingFavorite?.deletedAt !== null &&
       existingFavorite?.deletedAt !== undefined
     ) {
-      console.log('dans le else if', existingFavorite?.deletedAt);
       existingFavorite.deletedAt = null;
       existingFavorite.save();
       return true;
     } else {
-      console.log('dans le else');
       const newFavorite = new FavoriteEntity();
       newFavorite.user = users;
       newFavorite.property = property;

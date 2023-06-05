@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 
@@ -20,7 +21,10 @@ export class FavoriteController {
 
   @Patch()
   @UseGuards(AuthGuard('jwt'))
-  toggleFavorite(@Req() req, @Body() propertyId: propertyIdDto) {
+  toggleFavorite(
+    @Req() req,
+    @Body(new ValidationPipe({ whitelist: true })) propertyId: propertyIdDto,
+  ) {
     return this.favoriteService.toggleFavorite(req.user, propertyId);
   }
 

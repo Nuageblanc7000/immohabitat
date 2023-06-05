@@ -26,6 +26,11 @@ export class PropertyModule implements NestModule {
       .exclude(
         { path: 'properties', method: RequestMethod.POST },
         { path: 'properties', method: RequestMethod.GET },
+        { path: 'properties/step1', method: RequestMethod.POST },
+        { path: 'properties/step2', method: RequestMethod.POST },
+        { path: 'properties/step3', method: RequestMethod.POST },
+        { path: 'properties/step4', method: RequestMethod.POST },
+        { path: 'properties/step5', method: RequestMethod.POST },
       )
       .forRoutes(PropertyController);
   }

@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   HttpCode,
+  ValidationPipe,
 } from '@nestjs/common';
 import { TypesService } from './types.service';
 import { CreateTypeDto } from './dto/create-type.dto';
@@ -18,7 +19,9 @@ export class TypesController {
   constructor(private readonly typesService: TypesService) {}
 
   @Post()
-  create(@Body() createTypeDto: CreateTypeDto) {
+  create(
+    @Body(new ValidationPipe({ whitelist: true })) createTypeDto: CreateTypeDto,
+  ) {
     return this.typesService.create(createTypeDto);
   }
 
@@ -35,7 +38,7 @@ export class TypesController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: string,
-    @Body() updateTypeDto: UpdateTypeDto,
+    @Body(new ValidationPipe({ whitelist: true })) updateTypeDto: UpdateTypeDto,
   ) {
     return this.typesService.update(+id, updateTypeDto);
   }
