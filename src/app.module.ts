@@ -16,6 +16,8 @@ import { FavoriteModule } from './favorite/favorite.module';
 import { SuccessInterceptor } from './shared/interceptor/SuccessInterceptor.interceptor';
 import { IsLocationValidConstraint } from './shared/validatorCustom/validateNestedLocation.validator';
 import { ValidDateConstraint } from './shared/validatorCustom/validator.date';
+import { ImageModule } from './image/image.module';
+import { GeolocalisaionModule } from './geolocalisaion/geolocalisaion.module';
 
 @Module({
   imports: [
@@ -30,6 +32,9 @@ import { ValidDateConstraint } from './shared/validatorCustom/validator.date';
     FavoriteModule,
     IsLocationValidConstraint,
     ValidDateConstraint,
+    ImageModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    GeolocalisaionModule,
   ],
   controllers: [AppController],
   providers: [

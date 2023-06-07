@@ -11,12 +11,15 @@ import { PropertyEntity } from 'src/shared/entities/property.entity';
 import { TypeEntity } from 'src/shared/entities/type.entity';
 import { LocationEntity } from 'src/shared/entities/location.entity';
 import { ExistMiddleware } from 'src/shared/middleware/exist/existProperty.middleware';
+import { NestjsFormDataModule, MemoryStoredFile } from 'nestjs-form-data';
+import { GeoService } from 'src/shared/geolocalisation/geo.service';
 
 @Module({
   controllers: [PropertyController],
-  providers: [PropertyService],
+  providers: [PropertyService, GeoService],
   imports: [
     TypeOrmModule.forFeature([PropertyEntity, TypeEntity, LocationEntity]),
+    NestjsFormDataModule.config({ storage: MemoryStoredFile }),
   ],
 })
 export class PropertyModule implements NestModule {

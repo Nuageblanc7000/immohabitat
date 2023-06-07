@@ -15,6 +15,7 @@ import { TypeEntity } from './type.entity';
 import slugify from 'slugify';
 import { LifeTimeEntity } from './lifetime.entity';
 import { FavoriteEntity } from './favorite.entity';
+import { ImageEntity } from './image.entity';
 @Entity('properties')
 @Unique(['slug'])
 export class PropertyEntity extends LifeTimeEntity {
@@ -107,4 +108,7 @@ export class PropertyEntity extends LifeTimeEntity {
 
   @OneToMany(() => FavoriteEntity, (favorite) => favorite.property)
   favorites: FavoriteEntity[];
+
+  @ManyToOne(() => ImageEntity, (image) => image.property)
+  images: ImageEntity[];
 }

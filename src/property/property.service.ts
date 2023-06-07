@@ -6,7 +6,7 @@ import {
 import { CreatePropertyDto } from './dto/create-property.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { PropertyEntity } from 'src/shared/entities/property.entity';
 
 import { plainToClass } from 'class-transformer';
@@ -16,9 +16,11 @@ import { LocationEntity } from 'src/shared/entities/location.entity';
 import { Step1Dto } from './dto/step/step1.dto';
 import { Step2Dto } from './dto/step/step2.dto';
 import { Step3Dto } from './dto/step/step3.dto';
-import { validate } from 'class-validator';
-import { log } from 'console';
+import { ValidationError, validate } from 'class-validator';
+
 import { Step4Dto } from './dto/step/step4.dto';
+import { Step5Dto } from './dto/step/step5.dto';
+import { GeoService } from 'src/shared/geolocalisation/geo.service';
 
 @Injectable()
 export class PropertyService {
@@ -29,6 +31,7 @@ export class PropertyService {
     private readonly typeRepository: Repository<TypeEntity>,
     @InjectRepository(LocationEntity)
     private readonly locationRepository: Repository<LocationEntity>,
+    private geoService: GeoService,
   ) {}
 
   async stepOne(session, step1Dto: Step1Dto) {
@@ -48,11 +51,14 @@ export class PropertyService {
   }
   async stepFour(session, step4Dto: Step4Dto) {
     const dto4 = Object.assign(new Step4Dto(), step4Dto);
-    console.log(dto4);
     const data = await this.validateStep(session, dto4, 3);
     return data;
   }
-  async stepFive(session, Step5Dto) {}
+  async stepFive(session, step5Dto) {
+    const dto5 = Object.assign(new Step5Dto(), step5Dto);
+    const data = await this.validateStep(session, dto5, 4);
+    return data;
+  }
 
   async create(
     session,
@@ -78,11 +84,15 @@ export class PropertyService {
     return saveProperty;
   }
 
-  async findAll() {
+  async findAll(city: string) {
+    const findCity = city ? city.trim().toLowerCase() : null;
     const [properties, count] = await this.propertyRepository.findAndCount({
       relations: ['location'],
+      where: { location: { city: ILike(`%${findCity}%`) } },
     });
-
+    if (count <= 0) {
+      // à faire une fois mis en place pour faire des tests
+    }
     return {
       properties: properties,
       count: count,
@@ -108,8 +118,6 @@ export class PropertyService {
 
   async update(session, id: number, updatePropertyDto) {
     await this.lastValidation(session, updatePropertyDto);
-
-    return 'ok';
     const type = await this.typeRepository.findOne({
       where: { id: updatePropertyDto.typeId },
     });
@@ -148,15 +156,27 @@ export class PropertyService {
   //methods steps
   private async validateStep(session, dtoInstance: object, step: number) {
     const keyStep = Object.keys(session.validateStep)[step];
+    const validation: ValidationError[] = await validate(dtoInstance);
+    const formattedErrors = validation.map((error) => ({
+      [error.property]: {
+        property: error.property,
+        constraints: error.constraints,
+      },
+    }));
 
-    if ((await validate(dtoInstance)).length > 0) {
+    if (validation.length > 0) {
       session.validateStep[keyStep] = false;
-      return session.validateStep[keyStep];
-    }
 
+      throw new BadRequestException({
+        message: 'step invalide' + ' ' + step,
+        errors: formattedErrors,
+      });
+    }
+    if (dtoInstance instanceof Step5Dto) {
+      dtoInstance = { images: [] };
+    }
     session.step = { ...session.step, ...dtoInstance };
     session.validateStep[keyStep] = true;
-
     return session.validateStep[keyStep];
   }
 
@@ -167,7 +187,7 @@ export class PropertyService {
         numberStepFail.push(step);
       }
     }
-    console.log(numberStepFail);
+
     if (numberStepFail.length > 0) {
       throw new BadRequestException({
         message: `Une ou plusieurs erreurs aux étapes ${numberStepFail.join(
@@ -184,7 +204,8 @@ export class PropertyService {
     const step2 = await this.stepTwo(session, dto);
     const step3 = await this.stepThree(session, dto);
     const step4 = await this.stepFour(session, dto);
-    const isValid: boolean[] = [step1, step2, step3, step4];
+    const step5 = await this.stepFour(session, dto);
+    const isValid: boolean[] = [step1, step2, step3, step4, step5];
     if (isValid.includes(false)) {
       this.validateAllStep(session);
     }
