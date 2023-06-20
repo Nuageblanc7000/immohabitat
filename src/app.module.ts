@@ -6,7 +6,7 @@ import { PropertyModule } from './property/property.module';
 import { UsersModule } from './users/users.module';
 import { TypesModule } from './types/types.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ClassSerializerInterceptor } from '@nestjs/common';
 import { ValidatorsModule } from './validators/validators.module';
 import { ConfigModule } from '@nestjs/config';
@@ -18,6 +18,7 @@ import { IsLocationValidConstraint } from './shared/validatorCustom/validateNest
 import { ValidDateConstraint } from './shared/validatorCustom/validator.date';
 import { ImageModule } from './image/image.module';
 import { GeolocalisaionModule } from './geolocalisaion/geolocalisaion.module';
+import { CityModule } from './city/city.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { GeolocalisaionModule } from './geolocalisaion/geolocalisaion.module';
     ImageModule,
     ConfigModule.forRoot({ isGlobal: true }),
     GeolocalisaionModule,
+    CityModule,
   ],
   controllers: [AppController],
   providers: [

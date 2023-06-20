@@ -11,9 +11,9 @@ export class IsLocationValidConstraint implements ValidatorConstraintInterface {
       return false; // L'objet location est manquant
     }
 
-    const { street, post_code, city } = location;
+    const { street, cityId } = location;
 
-    if (!street || !post_code || !city) {
+    if (!street || !cityId) {
       return false; // Un champ obligatoire est manquant
     }
 

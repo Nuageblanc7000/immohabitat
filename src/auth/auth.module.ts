@@ -8,12 +8,13 @@ import { MailerModule } from 'src/mailer/mailer.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { strategyService } from './strategy.service';
+import { PropertyEntity } from 'src/shared/entities/property.entity';
 
 @Module({
   controllers: [AuthController],
   providers: [AuthService, UsersService, strategyService, ConfigService],
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, PropertyEntity]),
     MailerModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -5,8 +5,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  ManyToOne,
   BeforeInsert,
+  JoinColumn,
 } from 'typeorm';
 import { PropertyEntity } from './property.entity';
 import { Exclude } from 'class-transformer';
@@ -18,12 +18,10 @@ import { FavoriteEntity } from './favorite.entity';
 export class UserEntity extends LifeTimeEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
   @Column()
   @IsEmail()
   @IsNotEmpty()
   email: string;
-
   @Column()
   @IsString()
   @IsNotEmpty()
@@ -49,12 +47,15 @@ export class UserEntity extends LifeTimeEntity {
     this.roles = ['user'];
   }
   @OneToMany(() => PropertyEntity, (property) => property.user, {
-    cascade: ['insert', 'update', 'soft-remove'],
+    nullable: true,
+    onDelete: 'CASCADE',
+    cascade: true,
   })
+  @JoinColumn()
   properties: PropertyEntity[];
 
   @OneToMany(() => FavoriteEntity, (favorite) => favorite.user, {
-    cascade: ['insert', 'update', 'soft-remove'],
+    onDelete: 'CASCADE',
   })
   favorites: FavoriteEntity[];
 

@@ -12,13 +12,19 @@ import { TypeEntity } from 'src/shared/entities/type.entity';
 import { LocationEntity } from 'src/shared/entities/location.entity';
 import { ExistMiddleware } from 'src/shared/middleware/exist/existProperty.middleware';
 import { NestjsFormDataModule, MemoryStoredFile } from 'nestjs-form-data';
-import { GeoService } from 'src/shared/geolocalisation/geo.service';
+import { GeolocalisaionService } from 'src/geolocalisaion/geolocalisaion.service';
+import { CityEntity } from 'src/shared/entities/city.entity';
 
 @Module({
   controllers: [PropertyController],
-  providers: [PropertyService, GeoService],
+  providers: [PropertyService, GeolocalisaionService],
   imports: [
-    TypeOrmModule.forFeature([PropertyEntity, TypeEntity, LocationEntity]),
+    TypeOrmModule.forFeature([
+      PropertyEntity,
+      TypeEntity,
+      LocationEntity,
+      CityEntity,
+    ]),
     NestjsFormDataModule.config({ storage: MemoryStoredFile }),
   ],
 })
@@ -29,6 +35,8 @@ export class PropertyModule implements NestModule {
       .exclude(
         { path: 'properties', method: RequestMethod.POST },
         { path: 'properties', method: RequestMethod.GET },
+        { path: 'properties/cities', method: RequestMethod.GET },
+        { path: 'properties/newProperties', method: RequestMethod.GET },
         { path: 'properties/step1', method: RequestMethod.POST },
         { path: 'properties/step2', method: RequestMethod.POST },
         { path: 'properties/step3', method: RequestMethod.POST },

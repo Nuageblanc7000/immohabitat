@@ -1,19 +1,29 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
   ValidationPipe,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
+import { UserEntity } from 'src/shared/entities/user.entity';
+import { UserDTO } from './dto/user.dto';
+import { plainToClass, plainToInstance } from 'class-transformer';
+import { Roles } from 'src/shared/decorator/roles.decorator';
+import { RolesGuard } from 'src/shared/guard/roles/roles.guard';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -22,15 +32,22 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
   }
-  @Patch(':id')
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
   update(
-    @Param('id') id: string,
     @Body(new ValidationPipe({ whitelist: true })) updateUserDto: UpdateUserDto,
+    @Req() req: Request,
   ) {
-    return this.usersService.update(+id, updateUserDto);
+    const user = Object.assign(new UserEntity(), req.user);
+    console.log(plainToClass(UserDTO, user));
+    return this.usersService.update(user, updateUserDto);
   }
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete()
+  remove(@Req() req: Request) {
+    const user = Object.assign(new UserEntity(), req.user);
+    return this.usersService.remove(user);
   }
 }

@@ -1,4 +1,5 @@
-import { IsString, IsNumber, IsDefined, IsNotEmpty } from 'class-validator';
+import { IsString, IsDefined, IsNotEmpty } from 'class-validator';
+import { CityDto } from './city.dto';
 
 export class LocationDto {
   @IsDefined()
@@ -6,15 +7,7 @@ export class LocationDto {
   @IsNotEmpty()
   street: string;
 
-  @IsDefined()
-  @IsString()
-  @IsNotEmpty()
-  post_code: string;
-
-  @IsDefined()
-  @IsString()
-  @IsNotEmpty()
-  city: string;
+  city: CityDto;
 
   // Autres propriétés de localisation si nécessaire
 }

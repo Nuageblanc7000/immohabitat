@@ -15,6 +15,6 @@ export class LifeTimeEntity extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
   @Exclude()
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'datetime', nullable: true })
   deletedAt: Date;
 }

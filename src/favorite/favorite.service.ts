@@ -30,13 +30,17 @@ export class FavoriteService {
       },
     });
     if (existingFavorite !== null && !existingFavorite?.deletedAt) {
+      existingFavorite.isFavorite = false;
+      existingFavorite.save();
       await this.favoriteRepo.softRemove(existingFavorite);
+
       return false; // Le favori a été supprimé
     } else if (
       existingFavorite?.deletedAt !== null &&
       existingFavorite?.deletedAt !== undefined
     ) {
       existingFavorite.deletedAt = null;
+      existingFavorite.isFavorite = true;
       existingFavorite.save();
       return true;
     } else {

@@ -100,7 +100,11 @@ export class PropertyEntity extends LifeTimeEntity {
   @JoinColumn()
   location: LocationEntity;
 
-  @ManyToOne(() => UserEntity, (user) => user.properties)
+  @ManyToOne(() => UserEntity, (user) => user.properties, {
+    nullable: true,
+    onDelete: 'CASCADE',
+    orphanedRowAction: 'soft-delete',
+  })
   user: UserEntity;
 
   @ManyToOne(() => TypeEntity, (type) => type.properties)
@@ -109,6 +113,6 @@ export class PropertyEntity extends LifeTimeEntity {
   @OneToMany(() => FavoriteEntity, (favorite) => favorite.property)
   favorites: FavoriteEntity[];
 
-  @ManyToOne(() => ImageEntity, (image) => image.property)
+  @OneToMany(() => ImageEntity, (image) => image.property)
   images: ImageEntity[];
 }

@@ -3,10 +3,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { CreatePropertyDto } from './dto/create-property.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { PropertyEntity } from 'src/shared/entities/property.entity';
 
 import { plainToClass } from 'class-transformer';
@@ -20,7 +19,8 @@ import { ValidationError, validate } from 'class-validator';
 
 import { Step4Dto } from './dto/step/step4.dto';
 import { Step5Dto } from './dto/step/step5.dto';
-import { GeoService } from 'src/shared/geolocalisation/geo.service';
+import { GeolocalisaionService } from 'src/geolocalisaion/geolocalisaion.service';
+import { CityEntity } from 'src/shared/entities/city.entity';
 
 @Injectable()
 export class PropertyService {
@@ -31,12 +31,15 @@ export class PropertyService {
     private readonly typeRepository: Repository<TypeEntity>,
     @InjectRepository(LocationEntity)
     private readonly locationRepository: Repository<LocationEntity>,
-    private geoService: GeoService,
+    @InjectRepository(CityEntity)
+    private readonly repoCity: Repository<CityEntity>,
+    private geoService: GeolocalisaionService,
   ) {}
 
   async stepOne(session, step1Dto: Step1Dto) {
     const dto1 = Object.assign(new Step1Dto(), step1Dto);
     const data = await this.validateStep(session, dto1, 0);
+    console.log(dto1);
     return data;
   }
   async stepTwo(session, step2Dto: Step2Dto) {
@@ -50,6 +53,7 @@ export class PropertyService {
     return data;
   }
   async stepFour(session, step4Dto: Step4Dto) {
+    console.log(step4Dto);
     const dto4 = Object.assign(new Step4Dto(), step4Dto);
     const data = await this.validateStep(session, dto4, 3);
     return data;
@@ -60,14 +64,14 @@ export class PropertyService {
     return data;
   }
 
-  async create(
-    session,
-    createPropertyDto: CreatePropertyDto,
-    user: UserEntity,
-  ) {
+  async create(createPropertyDto, session, user: UserEntity) {
     await this.lastValidation(session, createPropertyDto);
     const type = await this.typeRepository.findOne({
-      where: { id: createPropertyDto.typeId },
+      where: { id: session.step.typeId },
+    });
+
+    const city = await this.repoCity.findOne({
+      where: { id: createPropertyDto.location.cityId },
     });
 
     if (!type) {
@@ -75,34 +79,63 @@ export class PropertyService {
         'Veuillez indiquer un type de bien existant',
       );
     }
+
     const property = plainToClass(PropertyEntity, createPropertyDto);
     property.user = user;
     property.type = type;
+    property.location.city = city;
     const saveProperty = await this.propertyRepository.save(property);
     delete session.validateStep;
     delete session.step;
     return saveProperty;
   }
 
-  async findAll(city: string) {
-    const findCity = city ? city.trim().toLowerCase() : null;
-    const [properties, count] = await this.propertyRepository.findAndCount({
-      relations: ['location'],
-      where: { location: { city: ILike(`%${findCity}%`) } },
-    });
-    if (count <= 0) {
-      // à faire une fois mis en place pour faire des tests
+  async findAll(
+    city: string,
+    minPrice: number,
+    maxPrice: number,
+    type: string,
+  ) {
+    let properties, count;
+
+    const findCity =
+      city && city.trim().length > 0 ? city.trim().toLowerCase() : null;
+    console.log(findCity);
+    const query = this.propertyRepository
+      .createQueryBuilder('property')
+      .leftJoinAndSelect('property.location', 'location')
+      .leftJoinAndSelect('location.city', 'city')
+      .leftJoinAndSelect('property.type', 'type')
+      .leftJoinAndSelect('property.images', 'images');
+
+    if (findCity) {
+      query.andWhere('city.localite like :t', { t: `%${findCity}%` });
     }
+
+    if (minPrice) {
+      query.andWhere('property.price >= :minPrice', { minPrice });
+    }
+
+    if (maxPrice) {
+      query.andWhere('property.price <= :maxPrice', { maxPrice });
+    }
+
+    if (type) {
+      query.andWhere('type.title = :type', { type });
+    }
+
+    [properties, count] = await query.getManyAndCount();
+
     return {
-      properties: properties,
-      count: count,
+      properties,
+      count,
     };
   }
 
   async findOne(id: number) {
     const property = await this.propertyRepository.findOne({
       where: { id: id },
-      relations: ['user', 'location', 'type'],
+      relations: ['user', 'location', 'location.city', 'type', 'images'],
     });
     if (!property) throw new NotFoundException();
     return { property };
@@ -110,7 +143,7 @@ export class PropertyService {
   async findOneSlug(slug: string) {
     const property = await this.propertyRepository.findOne({
       where: { slug: slug },
-      relations: ['user', 'location', 'type'],
+      relations: ['user', 'location', 'type', 'city', 'images'],
     });
     if (!property) throw new NotFoundException();
     return { property };
@@ -138,8 +171,7 @@ export class PropertyService {
     });
     const location = propertyUpdate.location;
     location.street = updatePropertyDto.location.street;
-    location.post_code = updatePropertyDto.location.post_code;
-    location.city = updatePropertyDto.location.city;
+    location.city = updatePropertyDto.location.cityId;
     updatedProperty.location = await this.locationRepository.save(location);
     delete session.validateStep;
     delete session.step;
@@ -156,6 +188,9 @@ export class PropertyService {
   //methods steps
   private async validateStep(session, dtoInstance: object, step: number) {
     const keyStep = Object.keys(session.validateStep)[step];
+    console.log(step, 'number step');
+    console.log(Object.keys(session.validateStep));
+    console.log(keyStep);
     const validation: ValidationError[] = await validate(dtoInstance);
     const formattedErrors = validation.map((error) => ({
       [error.property]: {
@@ -163,12 +198,12 @@ export class PropertyService {
         constraints: error.constraints,
       },
     }));
-
+    console.log(validation, 'step invalide' + ' ' + keyStep);
     if (validation.length > 0) {
       session.validateStep[keyStep] = false;
 
       throw new BadRequestException({
-        message: 'step invalide' + ' ' + step,
+        message: 'step invalide' + ' ' + keyStep,
         errors: formattedErrors,
       });
     }
@@ -209,5 +244,40 @@ export class PropertyService {
     if (isValid.includes(false)) {
       this.validateAllStep(session);
     }
+  }
+
+  async findAllCityWithProperties() {
+    return this.repoCity
+      .createQueryBuilder('city')
+      .innerJoin('city.locations', 'location')
+      .innerJoin('location.property', 'property')
+      .getMany();
+  }
+
+  async findNewProperties() {
+    const timeNow = new Date().getTime();
+
+    let days = 1;
+    let properties = [];
+    const count = await this.propertyRepository.count();
+    if (count > 0) {
+      while (properties.length < 2) {
+        days++;
+        const timeStart = timeNow - days * 24 * 60 * 60 * 1000;
+        const startDate = new Date(timeStart);
+        properties = await this.propertyRepository
+          .createQueryBuilder('p')
+          .leftJoinAndSelect('p.images', 'images')
+          .leftJoinAndSelect('p.location', 'location')
+          .leftJoinAndSelect('location.city', 'city')
+          .leftJoinAndSelect('p.type', 'type')
+
+          .where('p.createdAt > :startDate', { startDate })
+          .take(6)
+          .getMany();
+      }
+    }
+
+    return { properties };
   }
 }
