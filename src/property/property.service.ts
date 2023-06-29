@@ -247,10 +247,10 @@ export class PropertyService {
   }
 
   async findAllCityWithProperties() {
-    return this.repoCity
+    return await this.repoCity
       .createQueryBuilder('city')
       .innerJoin('city.locations', 'location')
-      .innerJoin('location.property', 'property')
+      .innerJoin('location.property', 'properties')
       .getMany();
   }
 

@@ -18,6 +18,8 @@ import { UserDTO } from './dto/user.dto';
 import { plainToClass, plainToInstance } from 'class-transformer';
 import { Roles } from 'src/shared/decorator/roles.decorator';
 import { RolesGuard } from 'src/shared/guard/roles/roles.guard';
+import { UpdatePasswordDto } from './dto/update-password.dto';
+import { UpdateEmailDto } from './dto/update-email.dto';
 
 @Controller('users')
 export class UsersController {
@@ -42,6 +44,30 @@ export class UsersController {
     const user = Object.assign(new UserEntity(), req.user);
     console.log(plainToClass(UserDTO, user));
     return this.usersService.update(user, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('password-modify')
+  updatePassword(
+    @Body(new ValidationPipe({ whitelist: true }))
+    updatePasswordDto: UpdatePasswordDto,
+    @Req() req: Request,
+  ) {
+    const user = Object.assign(new UserEntity(), req.user);
+    console.log(plainToClass(UserDTO, user));
+    return this.usersService.updatePassword(user, updatePasswordDto);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('email-modify')
+  updateEmail(
+    @Body(new ValidationPipe({ whitelist: true }))
+    updateEmailDto: UpdateEmailDto,
+    @Req() req: Request,
+  ) {
+    const user = Object.assign(new UserEntity(), req.user);
+    console.log(plainToClass(UserDTO, user));
+    return this.usersService.updateEmail(user, updateEmailDto);
   }
 
   @UseGuards(AuthGuard('jwt'))

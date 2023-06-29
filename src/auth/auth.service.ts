@@ -20,12 +20,12 @@ export class AuthService {
   ) {}
 
   async signup(newUser: CreateUserDto): Promise<UserEntity> {
-    console.log(newUser);
     const userExist = await this.userRepo.findOne({
       where: { email: newUser.email },
       withDeleted: true,
     });
-    if (userExist) throw new BadRequestException('Cet email existe déjà');
+    if (userExist)
+      throw new BadRequestException('Un compte existe déjà avec cet email');
 
     // encrypted password + created salt
     const salt = await bcrypt.genSalt(8);
@@ -50,12 +50,9 @@ export class AuthService {
     if (!passMatch)
       throw new UnauthorizedException('Email ou password incorect');
     const payload = { sub: user.id };
-
     return {
       user,
       access_token: await this.jwtService.signAsync(payload),
     };
   }
-
-  logout() {}
 }

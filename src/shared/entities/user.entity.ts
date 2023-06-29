@@ -39,6 +39,8 @@ export class UserEntity extends LifeTimeEntity {
   })
   password: string;
 
+  @Column({ type: 'varchar', nullable: true })
+  phone: string;
   @Column({ type: 'simple-array' })
   roles: string[];
 
