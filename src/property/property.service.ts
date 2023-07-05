@@ -39,7 +39,7 @@ export class PropertyService {
   async stepOne(session, step1Dto: Step1Dto) {
     const dto1 = Object.assign(new Step1Dto(), step1Dto);
     const data = await this.validateStep(session, dto1, 0);
-    console.log(dto1);
+
     return data;
   }
   async stepTwo(session, step2Dto: Step2Dto) {
@@ -53,7 +53,6 @@ export class PropertyService {
     return data;
   }
   async stepFour(session, step4Dto: Step4Dto) {
-    console.log(step4Dto);
     const dto4 = Object.assign(new Step4Dto(), step4Dto);
     const data = await this.validateStep(session, dto4, 3);
     return data;
@@ -100,7 +99,7 @@ export class PropertyService {
 
     const findCity =
       city && city.trim().length > 0 ? city.trim().toLowerCase() : null;
-    console.log(findCity);
+
     const query = this.propertyRepository
       .createQueryBuilder('property')
       .leftJoinAndSelect('property.location', 'location')
@@ -188,9 +187,7 @@ export class PropertyService {
   //methods steps
   private async validateStep(session, dtoInstance: object, step: number) {
     const keyStep = Object.keys(session.validateStep)[step];
-    console.log(step, 'number step');
-    console.log(Object.keys(session.validateStep));
-    console.log(keyStep);
+
     const validation: ValidationError[] = await validate(dtoInstance);
     const formattedErrors = validation.map((error) => ({
       [error.property]: {
@@ -198,7 +195,7 @@ export class PropertyService {
         constraints: error.constraints,
       },
     }));
-    console.log(validation, 'step invalide' + ' ' + keyStep);
+
     if (validation.length > 0) {
       session.validateStep[keyStep] = false;
 

@@ -43,7 +43,6 @@ export class AuthService {
     //on vérifie d'abord si il y a un user grace à un champ unique ici l'email puis on vérifie le mot de passe
     const user = await this.userRepo.findOne({
       where: { email: email },
-      withDeleted: true,
     });
     if (!user) throw new UnauthorizedException('Email ou password incorect');
     const passMatch = await bcrypt.compare(password, user.password);

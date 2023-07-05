@@ -9,8 +9,6 @@ export class CityController {
 
   @Post()
   async findAll(@Body() locality: CitySearchDto) {
-    console.log(locality);
-
     return this.cityService.getAll(locality);
   }
 }

@@ -24,27 +24,50 @@ export class GeolocalisaionService {
     }
   }
 
-  async searchByStreet(street: streetDto) {
-    try {
-      console.log(street.street);
-      const encodedStreet = encodeURIComponent(street.street);
-      const encodedCountry = encodeURIComponent('Belgium');
-      const url = `https://api.opencagedata.com/geocode/v1/json?key=${this.apiKey}&q=${encodedStreet}&pretty=1&no_annotations=1&limit=20`;
+  // async searchByStreet(street) {
+  //   try {
+  //     const encodedStreet = encodeURIComponent(street.street);
+  //     console.log(encodedStreet, '-------------->');
+  //     const encodedCountry = encodeURIComponent('Belgium');
+  //     const url = `https://api.opencagedata.com/geocode/v1/json?key=${this.apiKey}&q=${encodedStreet},${encodedCountry}&pretty=1&no_annotations=1&limit=10`;
+  //     const response = await axios.get(url);
+  //     const results = await response.data.results;
 
-      const response = await axios.get(url);
-      const results = await response.data.results;
-      console.log(results);
+  //     results.map((r) => {
+  //       console.log(r);
+  //     });
+  //     const formattedAddresses = results.map((r) => {
+  //       return r.formatted;
+  //     });
 
-      // Traitez les résultats pour obtenir les informations dont vous avez besoin
-      return results.map((r) => r.formatted);
-    } catch (error) {
-      console.error(
-        "Une erreur s'est produite lors de la recherche de la rue :",
-        error,
-      );
-      return [];
-    }
-  }
+  //     console.log(encodedStreet, '-------------->');
+  //     return formattedAddresses;
+  //   } catch (error) {
+  //     console.error(
+  //       "Une erreur s'est produite lors de la recherche de la rue :",
+  //       error,
+  //     );
+  //     return [];
+  //   }
+  // }
+  // async searchByStreet(street) {
+  //   try {
+  //     const encodedStreet = encodeURIComponent(street.street);
+  //     const encodedCountry = encodeURIComponent('Belgium');
+  //     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodedStreet},${encodedCountry}&addressdetails=1&limit=10`;
+  //     const response = await axios.get(url);
+  //     const results: any[] = response.data;
+  //     console.log(results.filter((p) => p.address?.road && p.address.postCode));
+  //     return '';
+  //   } catch (error) {
+  //     console.error(
+  //       "Une erreur s'est produite lors de la recherche de la rue :",
+  //       error,
+  //     );
+  //     return [];
+  //   }
+  // }
+
   calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
     const earthRadius = 6371; // Rayon de la Terre en kilomètres
 

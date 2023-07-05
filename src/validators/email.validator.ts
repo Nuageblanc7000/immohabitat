@@ -18,7 +18,6 @@ export class IsEmailUserAlreadyExistConstraint
     @InjectRepository(UserEntity) readonly userRepo: Repository<UserEntity>,
   ) {}
   async validate(email: string) {
-    console.log(email);
     return await this.userRepo.exist({ where: { email: email } });
   }
 }

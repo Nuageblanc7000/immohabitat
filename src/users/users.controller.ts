@@ -42,7 +42,7 @@ export class UsersController {
     @Req() req: Request,
   ) {
     const user = Object.assign(new UserEntity(), req.user);
-    console.log(plainToClass(UserDTO, user));
+
     return this.usersService.update(user, updateUserDto);
   }
 
@@ -54,7 +54,7 @@ export class UsersController {
     @Req() req: Request,
   ) {
     const user = Object.assign(new UserEntity(), req.user);
-    console.log(plainToClass(UserDTO, user));
+
     return this.usersService.updatePassword(user, updatePasswordDto);
   }
 
@@ -66,7 +66,7 @@ export class UsersController {
     @Req() req: Request,
   ) {
     const user = Object.assign(new UserEntity(), req.user);
-    console.log(plainToClass(UserDTO, user));
+
     return this.usersService.updateEmail(user, updateEmailDto);
   }
 

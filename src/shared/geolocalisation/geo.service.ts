@@ -13,7 +13,6 @@ export class GeoService {
       const url = `https://api.opencagedata.com/geocode/v1/json?key=${this.apiKey}&q=${latitude}+${longitude}&pretty=1&no_annotations=1&limit=${limit}&radius=${radius}`;
       const response = await axios.get(url);
       const results = response.data.results;
-      console.log(results, 'ville');
 
       const cities = results.map((result: any) => result.components.city);
 
@@ -29,12 +28,12 @@ export class GeoService {
 
   async searchByStreet(street: string) {
     try {
+      console.log('ici!!!!!');
       const encodedStreet = encodeURIComponent(street);
-      const url = `https://api.opencagedata.com/geocode/v1/json?key=${this.apiKey}&q=${encodedStreet}&pretty=1&no_annotations=1&limit=10`;
+      const url = `https://api.opencagedata.com/geocode/v1/json?key=${this.apiKey}&q=${encodedStreet}&pretty=1&no_annotations=1&limit=15`;
 
       const response = await axios.get(url);
       const results = response.data.results;
-      console.log(results);
 
       // Traitez les résultats pour obtenir les informations dont vous avez besoin
 

@@ -106,7 +106,7 @@ export class PropertyController {
   @Get()
   findAll(@Query() query, @Req() request: Request) {
     const user = request.user;
-    console.log(request);
+
     const { city, minPrice, maxPrice, type } = query;
     return this.propertyService.findAll(city, minPrice, maxPrice, type);
   }
